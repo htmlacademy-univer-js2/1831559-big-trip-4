@@ -2,11 +2,6 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-let mode = "development";
-if (process.env.NODE_ENV === "production") {
-  mode = "production";
-}
-
 const plugins = [
   new CopyPlugin({
     patterns: [
@@ -25,7 +20,6 @@ const plugins = [
 ];
 
 module.exports = {
-  mode,
   plugins,
   entry: "./src/main.js",
   output: {
