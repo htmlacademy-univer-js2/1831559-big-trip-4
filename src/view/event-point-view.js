@@ -7,6 +7,8 @@ function createEventPointTemplate(event) {
   const duration = calcDuration(start, end);
 
   let offersContent = '';
+  // здесь нельзя использовать const
+  // eslint-disable-next-line prefer-const
   for (let offer of offers) {
     offersContent += `<li class="event__offer"><span class="event__offer-title">${offer.name} </span>&plus;&euro;&nbsp;<span class="event__offer-price"> ${offer.price}</span></li>`;
   }

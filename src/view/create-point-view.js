@@ -12,6 +12,8 @@ const BLANK_EVENT = {
 
 function createDestinationOptionsTemplate(destinationList) {
   let destinationOptions = '';
+  // здесь нельзя использовать const
+  // eslint-disable-next-line prefer-const
   for (let destination of destinationList) {
     destinationOptions += `<option value="${destination.name}"></option>`;
   }
@@ -21,6 +23,8 @@ function createDestinationOptionsTemplate(destinationList) {
 
 function createOffersTemplate(offers) {
   let offersContent = '';
+  // здесь нельзя использовать const
+  // eslint-disable-next-line prefer-const
   for (let offer of offers) {
     const offerTitleForAttr = transformToKebabCase(offer.name);
 
@@ -40,6 +44,8 @@ function createOffersTemplate(offers) {
 
 function createPhotosTemplate(photos) {
   let photosTemplate = '';
+  // здесь нельзя использовать const
+  // eslint-disable-next-line prefer-const
   for (let photo of photos) {
     photosTemplate += `<img class="event__photo" src="${photo}" alt="Event photo">`;
   }
