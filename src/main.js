@@ -1,8 +1,12 @@
-import EventListPresenter from './presenter/event-list-presenter';
+import EventAppPresenter from './presenter/event-list-presenter';
+import EventsModel from './model/events-model';
 
-const eventListPresenter = new EventListPresenter({
+
+const eventsModel = new EventsModel();
+const eventAppPresenter = new EventAppPresenter({
   eventListContainer: document.querySelector('.trip-events'),
   filterContainer: document.querySelector('.trip-controls__filters'),
+  eventsModel
 });
 
-eventListPresenter.init();
+eventAppPresenter.init();
