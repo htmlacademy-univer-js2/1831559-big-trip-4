@@ -8,6 +8,7 @@ import FilterView from '../view/filter-view';
 export default class EventAppPresenter {
   filterComponent = new FilterView();
   eventListComponent = new EventListView();
+  sortComponent = new SortView();
 
   constructor({ eventListContainer, filterContainer }) {
     this.eventListContainer = eventListContainer;
@@ -15,8 +16,8 @@ export default class EventAppPresenter {
   }
 
   init() {
-    render(new FilterView(), this.filterContainer);
-    render(new SortView(), this.eventListContainer);
+    render(this.filterComponent, this.filterContainer);
+    render(this.sortComponent, this.eventListContainer);
     render(this.eventListComponent, this.eventListContainer);
     render(new CreatePointView(), this.eventListComponent.getElement());
 
