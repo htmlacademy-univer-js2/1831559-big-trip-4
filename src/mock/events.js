@@ -19,8 +19,7 @@ const destinations = [
       }, {
         src: 'img/photos/5.jpg',
         description: 'photo 5'
-      } 
-    ]
+      }]
   }, {
     id: 'e96bad49-e3d9-41cb-bf6b-560dd553083f',
     description: 'Amsterdam - City of canals, culture and infinite charm. Amsterdam. Capital of the Netherlands. With its famously scenic canals, rich history and iconic cultural scene, Amsterdam is one of the world\'s most vibrant cities.',
