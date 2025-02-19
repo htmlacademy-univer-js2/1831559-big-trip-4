@@ -1,3 +1,4 @@
+import { getDestinationById, getOffersVariantsByType } from '../mock/events';
 import { createElement } from '../render';
 import { capitalize, transformToKebabCase } from '../utils';
 
@@ -21,18 +22,20 @@ function createDestinationOptionsTemplate(destinationList) {
   return `<datalist id="destination-list-1">${destinationOptions}</datalist>`;
 }
 
-function createOffersTemplate(offers) {
+function createOffersTemplate(type, offerIds) {
+  const allOffers = getOffersVariantsByType(type);
   let offersContent = '';
   // здесь нельзя использовать const
   // eslint-disable-next-line prefer-const
-  for (let offer of offers) {
-    const offerTitleForAttr = transformToKebabCase(offer.name);
+  for (let offer of allOffers) {
+    const isChecked = offerIds.includes(offer.id);
+    const offerTitleForAttr = transformToKebabCase(offer.title);
 
     offersContent += `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-${offerTitleForAttr}-1" type="checkbox" name="event-${offerTitleForAttr}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-${offerTitleForAttr}-1" type="checkbox" name="event-${offerTitleForAttr}" ${isChecked ? 'checked' : '' }>
       <label class="event__offer-label" for="event-${offerTitleForAttr}-1">
-        <span class="event__offer-title">${offer.name} </span>
+        <span class="event__offer-title">${offer.title} </span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price"> ${offer.price}</span>
       </label>
@@ -47,7 +50,7 @@ function createPhotosTemplate(photos) {
   // здесь нельзя использовать const
   // eslint-disable-next-line prefer-const
   for (let photo of photos) {
-    photosTemplate += `<img class="event__photo" src="${photo}" alt="Event photo">`;
+    photosTemplate += `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
   }
 
   return `<div class="event__photos-container"><div class="event__photos-tape">${photosTemplate}</div></div>`;
@@ -55,10 +58,11 @@ function createPhotosTemplate(photos) {
 
 
 function createPointFormTemplate(event, destinationVariants) {
-  const {type, start, end, destination, price, offers} = event;
+  const {type, dateFrom, dateTo, destination: destinationId, basePrice, offers: offerIds} = event;
 
+  const destination = getDestinationById(destinationId);
   const detinationOptions = createDestinationOptionsTemplate(destinationVariants);
-  const offersTemplate = createOffersTemplate(offers);
+  const offersTemplate = createOffersTemplate(type, offerIds);
 
   return `
   <li class="trip-events__item">
@@ -139,18 +143,18 @@ function createPointFormTemplate(event, destinationVariants) {
           ${capitalize(type)}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text"
-          name="event-destination" value="${destination.city ? destination.city : ''}" list="destination-list-1">
+          name="event-destination" value="${destination.name ? destination.name : ''}" list="destination-list-1">
         ${detinationOptions}
       </div>
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
         <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-          value="${start ? start : ''}">
+          value="${dateFrom ? dateFrom : ''}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
         <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-          value="${end ? end : ''}">
+          value="${dateTo ? dateTo : ''}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -158,7 +162,7 @@ function createPointFormTemplate(event, destinationVariants) {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price ? price : ''}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice ? basePrice : ''}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -178,7 +182,7 @@ function createPointFormTemplate(event, destinationVariants) {
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${destination.description ? destination.description : ''}</p>
 
-        ${destination.photos.length > 0 ? createPhotosTemplate(destination.photos) : ''}
+        ${destination.pictures.length > 0 ? createPhotosTemplate(destination.pictures) : ''}
       </section>
     </section>
   </form>

@@ -214,3 +214,23 @@ const mockEvents = [
 export function getEvents() {
   return [...mockEvents];
 }
+
+export function getDestinationById(id) {
+  return destinations.find((destination) => destination.id === id);
+}
+
+export function getOfferByTypeAndId(type, id) {
+  const filteredOffersByType = offers.find((offer) => offer.type === type && offer.offers.length > 0);
+
+  return filteredOffersByType.offers.find((offer) => offer.id === id);
+}
+
+export function getOffersVariantsByType(type) {
+  const existedOffer = offers.find((offer) => offer.type === type);
+  if (existedOffer) {
+    return existedOffer.offers;
+  }
+  return [];
+}
+
+
