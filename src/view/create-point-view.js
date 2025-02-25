@@ -197,7 +197,7 @@ export default class CreatePointView extends AbstractView {
     this.destinationVariants = destinations;
   }
 
-  getTemplate() {
+  get template() {
     return createPointFormTemplate(this.event, this.destinationVariants);
   }
 }
