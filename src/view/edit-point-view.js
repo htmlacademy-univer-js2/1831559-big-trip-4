@@ -12,26 +12,22 @@ const BLANK_EVENT = {
 };
 
 function createDestinationOptionsTemplate(destinationList) {
-  let destinationOptions = '';
-  // здесь нельзя использовать const
-  // eslint-disable-next-line prefer-const
-  for (let destination of destinationList) {
-    destinationOptions += `<option value="${destination.name}"></option>`;
+  const destinationOptions = [];
+  for (const destination of destinationList) {
+    destinationOptions.push(`<option value="${destination.name}"></option>`);
   }
 
-  return `<datalist id="destination-list-1">${destinationOptions}</datalist>`;
+  return `<datalist id="destination-list-1">${destinationOptions.join('')}</datalist>`;
 }
 
 function createOffersTemplate(type, offerIds) {
   const allOffers = getOffersVariantsByType(type);
-  let offersContent = '';
-  // здесь нельзя использовать const
-  // eslint-disable-next-line prefer-const
-  for (let offer of allOffers) {
+  let offersContent = [];
+  for (const offer of allOffers) {
     const isChecked = offerIds.includes(offer.id);
     const offerTitleForAttr = transformToKebabCase(offer.title);
 
-    offersContent += `
+    offersContent.push(`
     <div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-${offerTitleForAttr}-1" type="checkbox" name="event-${offerTitleForAttr}" ${isChecked ? 'checked' : '' }>
       <label class="event__offer-label" for="event-${offerTitleForAttr}-1">
@@ -39,21 +35,19 @@ function createOffersTemplate(type, offerIds) {
         &plus;&euro;&nbsp;
         <span class="event__offer-price"> ${offer.price}</span>
       </label>
-    </div>`;
+    </div>`);
   }
 
-  return `<div class="event__available-offers">${offersContent}</div>`;
+  return `<div class="event__available-offers">${offersContent.join('')}</div>`;
 }
 
 function createPhotosTemplate(photos) {
-  let photosTemplate = '';
-  // здесь нельзя использовать const
-  // eslint-disable-next-line prefer-const
-  for (let photo of photos) {
-    photosTemplate += `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
+  const photosTemplate = [];
+  for (const photo of photos) {
+    photosTemplate.push(`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`);
   }
 
-  return `<div class="event__photos-container"><div class="event__photos-tape">${photosTemplate}</div></div>`;
+  return `<div class="event__photos-container"><div class="event__photos-tape">${photosTemplate.join('')}</div></div>`;
 }
 
 
