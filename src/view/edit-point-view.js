@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 
 function createEditPointTemplate() {
   return `
@@ -181,20 +181,8 @@ function createEditPointTemplate() {
   `;
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   getTemplate() {
     return createEditPointTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

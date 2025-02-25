@@ -1,6 +1,6 @@
 import { getDestinationById, getOffersVariantsByType } from '../mock/events';
-import { createElement } from '../render';
 import { capitalize, transformToKebabCase } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 const BLANK_EVENT = {
   type: '',
@@ -190,25 +190,14 @@ function createPointFormTemplate(event, destinationVariants) {
   `;
 }
 
-export default class CreatePointView {
+export default class CreatePointView extends AbstractView {
   constructor({event = BLANK_EVENT, destinations = []}) {
+    super();
     this.event = event;
     this.destinationVariants = destinations;
   }
 
   getTemplate() {
     return createPointFormTemplate(this.event, this.destinationVariants);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

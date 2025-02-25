@@ -1,6 +1,6 @@
 import { getDestinationById, getOfferByTypeAndId } from '../mock/events';
-import { createElement } from '../render';
 import { calcDuration, capitalize, formatDateByPurpose } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 function createEventPointTemplate(event) {
   const {type, dateFrom, dateTo, destination: destinationId, basePrice, offers: offerIds} = event;
@@ -52,24 +52,13 @@ function createEventPointTemplate(event) {
             </li>`;
 }
 
-export default class EventPointView {
+export default class EventPointView extends AbstractView {
   constructor({ event }) {
+    super();
     this.event = event;
   }
 
   getTemplate() {
     return createEventPointTemplate(this.event);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
