@@ -232,4 +232,7 @@ export function getOffersVariantsByType(type) {
   return [];
 }
 
+export function getDestinationsVariants() {
+  return [...destinations];
+}
 

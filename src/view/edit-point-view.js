@@ -2,18 +2,9 @@ import { getDestinationById, getOffersVariantsByType } from '../mock/events';
 import { capitalize, transformToKebabCase } from '../utils';
 import AbstractView from '../framework/view/abstract-view';
 
-const BLANK_EVENT = {
-  type: '',
-  destination: '',
-  start: '',
-  end: '',
-  price: 0,
-  offers: []
-};
-
-function createDestinationOptionsTemplate(destinationList) {
+function createDestinationOptionsTemplate(destinations) {
   const destinationOptions = [];
-  for (const destination of destinationList) {
+  for (const destination of destinations) {
     destinationOptions.push(`<option value="${destination.name}"></option>`);
   }
 
@@ -22,7 +13,7 @@ function createDestinationOptionsTemplate(destinationList) {
 
 function createOffersTemplate(type, offerIds) {
   const allOffers = getOffersVariantsByType(type);
-  let offersContent = [];
+  const offersContent = [];
   for (const offer of allOffers) {
     const isChecked = offerIds.includes(offer.id);
     const offerTitleForAttr = transformToKebabCase(offer.title);
@@ -51,11 +42,11 @@ function createPhotosTemplate(photos) {
 }
 
 
-function editPointFormTemplate(event, destinationVariants) {
+function editPointFormTemplate(event, destinations) {
   const {type, dateFrom, dateTo, destination: destinationId, basePrice, offers: offerIds} = event;
 
   const destination = getDestinationById(destinationId);
-  const detinationOptions = createDestinationOptionsTemplate(destinationVariants);
+  const detinationOptions = createDestinationOptionsTemplate(destinations);
   const offersTemplate = createOffersTemplate(type, offerIds);
 
   return `
@@ -186,15 +177,15 @@ function editPointFormTemplate(event, destinationVariants) {
 
 export default class EditPointView extends AbstractView {
   #event = null;
-  #destinationVariants = null;
+  #destinations = null;
   #handleFormSubmit = null;
   #handleCloseForm = null;
 
 
-  constructor({event = BLANK_EVENT, destinations = [], onFormSubmit, onCloseForm}) {
+  constructor({event, destinations, onFormSubmit, onCloseForm}) {
     super();
     this.#event = event;
-    this.#destinationVariants = destinations;
+    this.#destinations = [...destinations];
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseForm = onCloseForm;
 
@@ -203,7 +194,7 @@ export default class EditPointView extends AbstractView {
   }
 
   get template() {
-    return editPointFormTemplate(this.#event, this.#destinationVariants);
+    return editPointFormTemplate(this.#event, this.#destinations);
   }
 
   #formSubmitHandler = (event) => {

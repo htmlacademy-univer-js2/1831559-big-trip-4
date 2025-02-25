@@ -15,6 +15,7 @@ export default class EventAppPresenter {
   #sortComponent = new SortView();
 
   #events = [];
+  #destinations = [];
 
   constructor({ eventListContainer, filterContainer, eventsModel }) {
     this.#eventListContainer = eventListContainer;
@@ -28,6 +29,8 @@ export default class EventAppPresenter {
 
     this.#events = [...this.#eventsModel.events];
     render(this.#eventListComponent, this.#eventListContainer);
+
+    this.#destinations = [...this.#eventsModel.destinations];
 
     for (let i = 0; i < this.#events.length; i++) {
       this.#renderEventPoint(this.#events[i]);
@@ -53,6 +56,7 @@ export default class EventAppPresenter {
 
     const eventEditComponent = new EditPointView({
       event,
+      destinations: this.#destinations,
       onFormSubmit: () => {
         replaceEditToView();
         document.removeEventListener('keydown', escKeyDownHandler);
