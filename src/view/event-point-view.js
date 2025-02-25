@@ -53,12 +53,22 @@ function createEventPointTemplate(event) {
 }
 
 export default class EventPointView extends AbstractView {
-  constructor({ event }) {
+  #handleEditClick = null;
+
+  constructor({ event, onEditClick }) {
     super();
     this.event = event;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createEventPointTemplate(this.event);
   }
+
+  #editClickHandler = (event) => {
+    event.preventDefault();
+    this.#handleEditClick();
+  };
 }
