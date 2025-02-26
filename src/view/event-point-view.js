@@ -1,6 +1,6 @@
 import { getDestinationById, getOfferByTypeAndId } from '../mock/events';
-import { createElement } from '../render';
 import { calcDuration, capitalize, formatDateByPurpose } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 function createEventPointTemplate(event) {
   const {type, dateFrom, dateTo, destination: destinationId, basePrice, offers: offerIds} = event;
@@ -8,12 +8,10 @@ function createEventPointTemplate(event) {
   const destination = getDestinationById(destinationId);
   const duration = calcDuration(dateFrom, dateTo);
 
-  let offersContent = '';
-  // здесь нельзя использовать const
-  // eslint-disable-next-line prefer-const
-  for (let id of offerIds) {
+  const offersContent = [];
+  for (const id of offerIds) {
     const offer = getOfferByTypeAndId(type, id);
-    offersContent += `<li class="event__offer"><span class="event__offer-title">${offer.title} </span>&plus;&euro;&nbsp;<span class="event__offer-price"> ${offer.price}</span></li>`;
+    offersContent.push(`<li class="event__offer"><span class="event__offer-title">${offer.title} </span>&plus;&euro;&nbsp;<span class="event__offer-price"> ${offer.price}</span></li>`);
   }
 
 
@@ -37,7 +35,7 @@ function createEventPointTemplate(event) {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                ${offersContent}
+                ${offersContent.join('')}
                 </ul>
                 <button class="event__favorite-btn" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -52,24 +50,23 @@ function createEventPointTemplate(event) {
             </li>`;
 }
 
-export default class EventPointView {
-  constructor({ event }) {
+export default class EventPointView extends AbstractView {
+  #handleEditClick = null;
+
+  constructor({ event, onEditClick }) {
+    super();
     this.event = event;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
+  get template() {
     return createEventPointTemplate(this.event);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (event) => {
+    event.preventDefault();
+    this.#handleEditClick();
+  };
 }

@@ -175,7 +175,7 @@ const mockEvents = [
   }, {
     id: '8a6f994e-5164-4d7c-b838-e38af484ffca',
     type: 'drive',
-    destination: destinations.geneva,
+    destination: 'dd739c4b-b7be-48bf-a53b-ef23d9efff27',
     dateFrom: new Date(2019, 3, 19, 10),
     dateTo: new Date(2019, 3, 19, 11),
     basePrice: 20,
@@ -184,7 +184,7 @@ const mockEvents = [
   }, {
     id: 'd752002b-8da5-4f79-9e31-cd6020be3847',
     type: 'flight',
-    destination: destinations.geneva,
+    destination: 'dd739c4b-b7be-48bf-a53b-ef23d9efff27',
     dateFrom: new Date(2019, 3, 19, 18),
     dateTo: new Date(2019, 3, 19),
     basePrice: 20,
@@ -193,7 +193,7 @@ const mockEvents = [
   }, {
     id: '9a7b5cf5-1b82-44c5-b5dd-32610c6e3363',
     type: 'drive',
-    destination: destinations.geneva,
+    destination: 'dd739c4b-b7be-48bf-a53b-ef23d9efff27',
     dateFrom: new Date(2019, 3, 19, 8, 25),
     dateTo: new Date(2019, 3, 19, 9, 25),
     basePrice: 20,
@@ -202,7 +202,7 @@ const mockEvents = [
   }, {
     id: '05a3fbea-c0ac-462e-bd9c-7bd72e16321e',
     type: 'sightseeing',
-    destination: destinations.geneva,
+    destination: 'dd739c4b-b7be-48bf-a53b-ef23d9efff27',
     dateFrom: new Date(2019, 3, 20, 11, 15),
     dateTo: new Date(2019, 3, 20, 12, 15),
     basePrice: 180,
@@ -232,4 +232,7 @@ export function getOffersVariantsByType(type) {
   return [];
 }
 
+export function getDestinationsVariants() {
+  return [...destinations];
+}
 
