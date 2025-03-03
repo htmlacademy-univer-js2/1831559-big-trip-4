@@ -50,7 +50,8 @@ export default class EventAppPresenter {
   #renderEventPoint(event) {
     const eventPointPresenter = new EventPointPresenter({
       eventListContainer: this.#eventListComponent.element,
-      onEventChange: this.#handleEventChange
+      onEventChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange
     });
     eventPointPresenter.init(event, this.#destinations);
     this.#eventsPresenters.set(event.id, eventPointPresenter);
@@ -59,5 +60,9 @@ export default class EventAppPresenter {
   #handleEventChange = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#eventsPresenters.get(updatedEvent.id).init(updatedEvent, this.#destinations);
+  };
+
+  #handleModeChange = () => {
+    this.#eventsPresenters.forEach((presenter) => presenter.resetView());
   };
 }
