@@ -44,3 +44,7 @@ export function capitalize(text) {
 export function transformToKebabCase(text) {
   return text ? text.split(' ').join('-') : '';
 }
+
+export function updateItem(items, updatedItem) {
+  return items.map((item) => item.id === updatedItem.id ? updatedItem : item);
+}

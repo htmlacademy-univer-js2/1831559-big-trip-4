@@ -197,13 +197,13 @@ export default class EditPointView extends AbstractView {
     return editPointFormTemplate(this.#event, this.#destinations);
   }
 
-  #formSubmitHandler = (event) => {
-    event.preventDefault();
-    this.#handleFormSubmit();
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(this.#event);
   };
 
-  #formCloseHandler = (event) => {
-    event.preventDefault();
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
     this.#handleCloseForm();
   };
 }
