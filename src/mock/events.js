@@ -206,6 +206,7 @@ const mockEvents = [
     dateFrom: new Date(2019, 3, 20, 11, 15),
     dateTo: new Date(2019, 3, 20, 12, 15),
     basePrice: 180,
+    isFavorite: true,
     offers: ['0fb0a3bd-30f1-4d55-84f6-fb05d684c47b']
   }
 ];
