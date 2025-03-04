@@ -1,6 +1,8 @@
 import { getDestinationById, getOffersVariantsByType } from '../mock/events';
 import { capitalize, formatDateByPurpose } from '../utils';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createDestinationOptionsTemplate(destinations) {
   const destinationOptions = [];
@@ -182,6 +184,8 @@ export default class EditPointView extends AbstractStatefulView {
   #destinations = null;
   #handleFormSubmit = null;
   #handleCloseForm = null;
+  #datePickerStart = null;
+  #datePickerEnd = null;
 
 
   constructor({event, destinations, onFormSubmit, onCloseForm}) {
@@ -196,6 +200,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+
+    this.#initDatePickers();
   }
 
   get template() {
@@ -258,9 +264,71 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+    this.#initDatePickers();
   }
 
   reset(event) {
     this.updateElement(event);
+  }
+
+  #initDatePickers() {
+    const startInput = this.element.querySelector('#event-start-time-1');
+    const endInput = this.element.querySelector('#event-end-time-1');
+
+    this.#datePickerStart = flatpickr(startInput, {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateFrom,
+      onChange: this.#onStartDateChange,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+    });
+
+    this.#datePickerEnd = flatpickr(endInput, {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateTo,
+      onChange: this.#onEndDateChange,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      minDate: this._state.dateFrom
+    });
+  }
+
+  #onStartDateChange = ([selectedDate]) => {
+    const newStartDate = selectedDate.toISOString();
+    const currentEndDate = new Date(this._state.dateTo);
+
+    if (selectedDate > currentEndDate) {
+      this.updateElement({ dateFrom: newStartDate, dateTo: newStartDate });
+    } else {
+      this.updateElement({ dateFrom: newStartDate });
+    }
+    this.updateElement({ dateFrom: newStartDate });
+
+    this.#datePickerEnd.set('minDate', newStartDate);
+  };
+
+  #onEndDateChange = ([selectedDate]) => {
+    const newEndDate = selectedDate.toISOString();
+    const currentStartDate = new Date(this._state.dateFrom);
+
+    if (selectedDate < currentStartDate) {
+      return;
+    }
+
+    this.updateElement({ dateTo: newEndDate });
+  };
+
+  removeElement() {
+    super.removeElement();
+    if (this.#datePickerStart) {
+      this.#datePickerStart.destroy();
+      this.#datePickerStart = null;
+    }
+    if (this.#datePickerEnd) {
+      this.#datePickerEnd.destroy();
+      this.#datePickerEnd = null;
+    }
   }
 }
