@@ -1,5 +1,5 @@
 import { getDestinationById, getOffersVariantsByType } from '../mock/events';
-import { capitalize } from '../utils';
+import { capitalize, formatDateByPurpose } from '../utils';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 function createDestinationOptionsTemplate(destinations) {
@@ -47,6 +47,9 @@ function editPointFormTemplate(event, destinations) {
   const destination = getDestinationById(destinationId);
   const detinationOptions = createDestinationOptionsTemplate(destinations);
   const offersTemplate = createOffersTemplate(type, offerIds);
+
+  const formattedDateFrom = formatDateByPurpose(dateFrom, 'formInput');
+  const formattedDateTo = formatDateByPurpose(dateTo, 'formInput');
 
   return `
   <li class="trip-events__item">
@@ -134,11 +137,11 @@ function editPointFormTemplate(event, destinations) {
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
         <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-          value="${dateFrom ? dateFrom : ''}">
+          value="${formattedDateFrom ? formattedDateFrom : ''}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
         <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-          value="${dateTo ? dateTo : ''}">
+          value="${formattedDateTo ? formattedDateTo : ''}">
       </div>
 
       <div class="event__field-group  event__field-group--price">

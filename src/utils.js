@@ -17,6 +17,9 @@ export function formatDateByPurpose(date, purpose) {
     case 'eventTimeAttr':
       format = 'YYYY-MM-DDTHH:mm';
       break;
+    case 'formInput':
+      format = 'DD/MM/YY HH:mm';
+      break;
   }
 
   return date ? dayjs(date).format(format) : '';
