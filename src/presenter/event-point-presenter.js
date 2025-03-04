@@ -63,11 +63,6 @@ export default class EventPointPresenter {
     remove(prevEditPointComponent);
   }
 
-  #destroy() {
-    remove(this.#eventPointComponent);
-    remove(this.#eventEditComponent);
-  }
-
   #replaceViewToEdit() {
     replace(this.#eventEditComponent, this.#eventPointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
