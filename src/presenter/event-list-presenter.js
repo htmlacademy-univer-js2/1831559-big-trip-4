@@ -1,5 +1,5 @@
 import { render } from '../framework/render.js';
-import { updateItem } from '../utils.js';
+import { updatePointData } from '../utils.js';
 import EventListView from '../view/event-list-view.js';
 import FilterView from '../view/filter-view.js';
 import SortView from '../view/sort-view.js';
@@ -58,7 +58,7 @@ export default class EventAppPresenter {
   }
 
   #handleEventChange = (updatedEvent) => {
-    this.#events = updateItem(this.#events, updatedEvent);
+    this.#events = updatePointData(this.#events, updatedEvent);
     this.#eventsPresenters.get(updatedEvent.id).init(updatedEvent, this.#destinations);
   };
 
