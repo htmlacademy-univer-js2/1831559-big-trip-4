@@ -79,6 +79,7 @@ export default class EventPointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceEditToView();
     }
   };
@@ -88,6 +89,7 @@ export default class EventPointPresenter {
   };
 
   #handleCloseForm = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceEditToView();
   };
 
@@ -102,6 +104,7 @@ export default class EventPointPresenter {
 
   resetView() {
     if (this.#mode !== mode.default) {
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceEditToView();
     }
   }
