@@ -1,6 +1,8 @@
 import { getDestinationById, getOffersVariantsByType } from '../mock/events';
-import { capitalize, transformToKebabCase } from '../utils';
-import AbstractView from '../framework/view/abstract-view';
+import { capitalize, formatDateByPurpose } from '../utils';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createDestinationOptionsTemplate(destinations) {
   const destinationOptions = [];
@@ -16,12 +18,11 @@ function createOffersTemplate(type, offerIds) {
   const offersContent = [];
   for (const offer of allOffers) {
     const isChecked = offerIds.includes(offer.id);
-    const offerTitleForAttr = transformToKebabCase(offer.title);
 
     offersContent.push(`
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-${offerTitleForAttr}-1" type="checkbox" name="event-${offerTitleForAttr}" ${isChecked ? 'checked' : '' }>
-      <label class="event__offer-label" for="event-${offerTitleForAttr}-1">
+      <input class="event__offer-checkbox  visually-hidden" id="event-${offer.id}" type="checkbox" name="event-${offer.id}" ${isChecked ? 'checked' : '' }>
+      <label class="event__offer-label" for="event-${offer.id}">
         <span class="event__offer-title">${offer.title} </span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price"> ${offer.price}</span>
@@ -48,6 +49,9 @@ function editPointFormTemplate(event, destinations) {
   const destination = getDestinationById(destinationId);
   const detinationOptions = createDestinationOptionsTemplate(destinations);
   const offersTemplate = createOffersTemplate(type, offerIds);
+
+  const formattedDateFrom = formatDateByPurpose(dateFrom, 'formInput');
+  const formattedDateTo = formatDateByPurpose(dateTo, 'formInput');
 
   return `
   <li class="trip-events__item">
@@ -135,11 +139,11 @@ function editPointFormTemplate(event, destinations) {
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
         <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-          value="${dateFrom ? dateFrom : ''}">
+          value="${formattedDateFrom ? formattedDateFrom : ''}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
         <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-          value="${dateTo ? dateTo : ''}">
+          value="${formattedDateTo ? formattedDateTo : ''}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -175,35 +179,156 @@ function editPointFormTemplate(event, destinations) {
   `;
 }
 
-export default class EditPointView extends AbstractView {
+export default class EditPointView extends AbstractStatefulView {
   #event = null;
   #destinations = null;
   #handleFormSubmit = null;
   #handleCloseForm = null;
+  #datePickerStart = null;
+  #datePickerEnd = null;
 
 
   constructor({event, destinations, onFormSubmit, onCloseForm}) {
     super();
-    this.#event = event;
+    this._setState(event);
     this.#destinations = [...destinations];
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseForm = onCloseForm;
 
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+
+    this.#initDatePickers();
   }
 
   get template() {
-    return editPointFormTemplate(this.#event, this.#destinations);
+    return editPointFormTemplate(this._state, this.#destinations);
   }
+
+  #eventTypeChangeHandler = (evt) => {
+    if (evt.target.name === 'event-type') {
+      const newType = evt.target.value;
+      this.updateElement({ type: newType, offers: [] });
+    }
+  };
+
+  #eventDestinationChangeHandler = (evt) => {
+    const newDestinationName = evt.target.value;
+
+    const newDestination = this.#destinations.find((dest) => dest.name === newDestinationName);
+    if (!newDestination) {
+      evt.target.value = this.#destinations[0].name;
+      this.updateElement({ destination: this.#destinations[0].id});
+      return;
+    }
+
+    const newDestinationId = newDestination ? newDestination.id : null;
+    this.updateElement({ destination: newDestinationId});
+  };
+
+  #offersChangeHandler = (evt) => {
+    if (evt.target.getAttribute('type') !== 'checkbox') {
+      return;
+    }
+
+    const offerId = evt.target.id.replace('event-', '').replace('-1', '');
+    const isChecked = evt.target.checked;
+
+    let updatedOffers = [...this._state.offers];
+
+    if (isChecked) {
+      updatedOffers.push(offerId);
+    } else {
+      updatedOffers = updatedOffers.filter((id) => id !== offerId);
+    }
+
+    this.updateElement({ offers: updatedOffers });
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#event);
+    this.#handleFormSubmit(this._state);
   };
 
   #formCloseHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseForm();
   };
+
+  _restoreHandlers() {
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#eventTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#eventDestinationChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+    this.#initDatePickers();
+  }
+
+  reset(event) {
+    this.updateElement(event);
+  }
+
+  #initDatePickers() {
+    const startInput = this.element.querySelector('#event-start-time-1');
+    const endInput = this.element.querySelector('#event-end-time-1');
+
+    this.#datePickerStart = flatpickr(startInput, {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateFrom,
+      onChange: this.#onStartDateChange,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+    });
+
+    this.#datePickerEnd = flatpickr(endInput, {
+      enableTime: true,
+      dateFormat: 'd/m/y H:i',
+      defaultDate: this._state.dateTo,
+      onChange: this.#onEndDateChange,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      minDate: this._state.dateFrom
+    });
+  }
+
+  #onStartDateChange = ([selectedDate]) => {
+    const newStartDate = selectedDate.toISOString();
+    const currentEndDate = new Date(this._state.dateTo);
+
+    if (selectedDate > currentEndDate) {
+      this.updateElement({ dateFrom: newStartDate, dateTo: newStartDate });
+    } else {
+      this.updateElement({ dateFrom: newStartDate });
+    }
+    this.updateElement({ dateFrom: newStartDate });
+
+    this.#datePickerEnd.set('minDate', newStartDate);
+  };
+
+  #onEndDateChange = ([selectedDate]) => {
+    const newEndDate = selectedDate.toISOString();
+    const currentStartDate = new Date(this._state.dateFrom);
+
+    if (selectedDate < currentStartDate) {
+      return;
+    }
+
+    this.updateElement({ dateTo: newEndDate });
+  };
+
+  removeElement() {
+    super.removeElement();
+    if (this.#datePickerStart) {
+      this.#datePickerStart.destroy();
+      this.#datePickerStart = null;
+    }
+    if (this.#datePickerEnd) {
+      this.#datePickerEnd.destroy();
+      this.#datePickerEnd = null;
+    }
+  }
 }

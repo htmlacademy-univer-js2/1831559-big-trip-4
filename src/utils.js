@@ -17,6 +17,9 @@ export function formatDateByPurpose(date, purpose) {
     case 'eventTimeAttr':
       format = 'YYYY-MM-DDTHH:mm';
       break;
+    case 'formInput':
+      format = 'DD/MM/YY HH:mm';
+      break;
   }
 
   return date ? dayjs(date).format(format) : '';
@@ -45,6 +48,6 @@ export function transformToKebabCase(text) {
   return text ? text.split(' ').join('-') : '';
 }
 
-export function updateItem(items, updatedItem) {
-  return items.map((item) => item.id === updatedItem.id ? updatedItem : item);
+export function updatePointData(points, updatedPointData) {
+  return points.map((point) => point.id === updatedPointData.id ? updatedPointData : point);
 }
